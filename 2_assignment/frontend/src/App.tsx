@@ -33,8 +33,8 @@ function App() {
         { key: 'capacity', label: 'Capacity', type: 'number' },
         { key: 'cargoSpaceCapacity', label: 'Cargo Space', type: 'number' }
     ];
-    const tableLinesHeaders = ["ID", "Origin", "Departure Time", "Arrival Time", "Distance", "Delete", "Edit"];
-    const tableLineKeys: (keyof Line)[] = ["id", "origin", "departureTime", "arrivalTime", "distance"];
+    const tableLinesHeaders = ["ID", "Origin", "Destination", "Departure Time", "Arrival Time", "Distance", "Delete", "Edit"];
+    const tableLineKeys: (keyof Line)[] = ["id", "origin", "destination", "departureTime", "arrivalTime", "distance"];
     const lineFields: FormField<Line>[] = [
         { key: 'origin', label: 'Origin', type: 'text' },
         { key: 'destination', label: 'Destination', type: 'text' },

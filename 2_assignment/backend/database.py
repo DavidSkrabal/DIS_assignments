@@ -49,7 +49,7 @@ def db_init():
     dummy_planes = [
         ('OK-YBA', 'A380', 400, 1000),
         ('FI-ABK', 'B737', 150, 500),
-        ('YE-DHG Simpson', 'A320', 180, 800)
+        ('YE-DHG', 'A320', 180, 800)
     ]
 
     #fill table by dummy data
