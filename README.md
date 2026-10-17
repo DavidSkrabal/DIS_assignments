@@ -18,6 +18,9 @@ This project is a web application developed for Assignment 2. It provides a fron
 *   **Backend:** Python, FastAPI.
 *   **Database:** SQLite3.
 
+### Demo video
+https://lut-my.sharepoint.com/:v:/g/personal/david_skrabal_student_lut_fi/IQDoZo-fj7ktTYCKRFpfTluUAUu2D1Lg56Vq8qv0fTcV4dA?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=u0h21k
+
 ---
 
 ### How to Run the Project locally
