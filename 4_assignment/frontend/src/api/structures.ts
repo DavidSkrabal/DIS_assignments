@@ -1,4 +1,5 @@
 export type SaleData = {
+    id: number;
     Column_Name: string;
     Description: string;
     Data_Type: string;
