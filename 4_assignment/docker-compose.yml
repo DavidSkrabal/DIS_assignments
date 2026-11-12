@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # 1. SQL Database (PostgreSQL)
+  postgres:
+    image: postgres:15-alpine
+    container_name: data_postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secretpassword
+      POSTGRES_DB: sales_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  # 2. NoSQL Database (MongoDB)
+  mongo:
+    image: mongo:6.0
+    container_name: data_mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secretpassword
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app-network
+
+  # 3. Python Backend (FastAPI)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: data_backend
+    environment:
+      - DATABASE_URL=postgresql://admin:secretpassword@postgres:5432/sales_db
+      - MONGO_URL=mongodb://admin:secretpassword@mongo:27017/
+      - INIT_DB_ON_STARTUP=True
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - postgres
+      - mongo
+    networks:
+      - app-network
+
+  # 4. React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: data_frontend
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+  mongo_data:
+
+networks:
+  app-network:
+    driver: bridge
