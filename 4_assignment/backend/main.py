@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 import databaseSQL
 import databaseMongo
+import replication
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException
 import dataSeed
@@ -49,23 +50,17 @@ def read_data():
     return data
 
 
-# @app.post("/api/{db_name}/insert")
-# def insert_data(db_name: str, data: dict):
-#     result = database.insert_data(db_name, data)
-#     if not result:
-#         raise HTTPException(status_code=500, detail="Failed to insert data")
-#     return result
+@app.post("/api/insert")
+def insert_data(data: dict):
+    result = replication.insert_data(data)
+    return result
     
-# @app.put("/api/{db_name}/update/{emp_id}")
-# def update_data(db_name: str, emp_id: int, data: dict):
-#     result = database.update_data(db_name, emp_id, data)
-#     if not result:
-#         raise HTTPException(status_code=500, detail="Failed to update data")
-#     return {"message": "Data updated successfully", "status": "ok"}
+@app.put("/api/update/{emp_id}")
+def update_data(emp_id: int, data: dict):
+    result = replication.update_data(emp_id, data)
+    return result
 
-# @app.delete("/api/{db_name}/delete/{emp_id}")
-# def delete_data(db_name: str, emp_id: int):
-#     result = database.delete_data(db_name, emp_id)
-#     if not result:
-#         raise HTTPException(status_code=500, detail="Failed to delete data")
-#     return {"message": "Data deleted successfully", "status": "ok"}
+@app.delete("/api/delete/{emp_id}")
+def delete_data(emp_id: int):
+    result = replication.delete_data(emp_id)
+    return result

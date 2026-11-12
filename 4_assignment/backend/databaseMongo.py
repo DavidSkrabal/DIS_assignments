@@ -33,6 +33,22 @@ def get_all_data():
     print("Data retrieved successfully!")
     return data
 
+def get_data_by_id(record_id):
+    """Retrieve a single record by ID from the MongoDB database."""
+    
+    client, mongo_db = db_connect()
+    collection = mongo_db["sales_dictionary"]
+    data = collection.find_one({"id": int(record_id)})
+    client.close()
+
+    if data:
+        data.pop("_id", None)
+        print("Data retrieved successfully!")
+        return data
+    else:
+        print("No matching record found.")
+        return None
+
 def insert_many_data(data_list):
     """Insert multiple records into the MongoDB database."""
     
@@ -51,20 +67,21 @@ def insert_data(data_dict):
     collection.insert_one(data_dict)
     client.close()
     
-    data_dict["_id"] = str(data_dict["_id"])  # Convert ObjectId to string for JSON serialization
+    data_dict.pop("_id", None)
     print("Data inserted successfully!")
     return data_dict
 
 def update_data(record_id, update_values):
     """Update a record in the MongoDB database."""
     
-    query = {"_id": ObjectId(record_id)}
-    if "_id" in update_values:
-        del update_values["_id"]  # Remove _id from update values to avoid conflicts
+    update_values.pop("_id", None)
     
     client, mongo_db = db_connect()
     collection = mongo_db["sales_dictionary"]
-    result = collection.update_one(query, {"$set": update_values})
+    result = collection.update_one(
+        {"id": int(record_id)}, 
+        {"$set": update_values}
+    )
     client.close()
 
     if result.matched_count > 0:
@@ -80,8 +97,7 @@ def delete_data(record_id):
     client, mongo_db = db_connect()
     collection = mongo_db["sales_dictionary"]
 
-    query = {"_id": ObjectId(record_id)}
-    result = collection.delete_one(query)
+    result = collection.delete_one({"id": int(record_id)})
     client.close()
 
     if result.deleted_count > 0:

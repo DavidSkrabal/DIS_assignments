@@ -65,6 +65,32 @@ def get_all_data():
     db_close(conn, cursor, "Data retrieved successfully!")
     return data
 
+def get_data_by_id(emp_id):
+    conn = db_connect()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT 
+            id AS "id",
+            Column_Name AS "Column_Name",
+            Description AS "Description",
+            Data_Type AS "Data_Type",
+            Example_Value AS "Example_Value",
+            Business_Meaning AS "Business_Meaning"
+        FROM sales_dictionary
+        WHERE id = %s
+    """, (emp_id,))
+    
+    row = cursor.fetchone()
+    if row is None:
+        db_close(conn, cursor, "No data found for the given ID.")
+        return None
+    
+    column_names = [desc[0] for desc in cursor.description]
+    data_dict = dict(zip(column_names, row))
+    
+    db_close(conn, cursor, "Data retrieved successfully!")
+    return data_dict
+
 def insert_data(data_dict):
     conn = db_connect()
     cursor = conn.cursor()
@@ -118,4 +144,3 @@ def delete_data(emp_id):
 
     cursor.execute("DELETE FROM sales_dictionary WHERE id = %s", (emp_id,))
     db_close(conn, cursor, "Data deleted successfully!")
-    return True

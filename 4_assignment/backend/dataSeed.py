@@ -31,10 +31,14 @@ def seed_data():
     nosql_only_df = df.iloc[12:24]
     shared_df = df.iloc[24:]
 
-    sql_data = pd.concat([sql_only_df, shared_df]).to_dict(orient='records')
-    databaseSQL.insert_many_data(sql_data)
+    databaseSQL.insert_many_data(shared_df.to_dict(orient='records'))
+    shared_df = databaseSQL.get_all_data()
+    databaseSQL.insert_many_data(sql_only_df.to_dict(orient='records'))
     print("SQL data inserted successfully.")
 
-    nosql_data = pd.concat([nosql_only_df, shared_df]).to_dict(orient='records')
+    nosql_only_df = nosql_only_df.to_dict(orient='records')
+    for i, row in enumerate(nosql_only_df, start=1000):
+        row['id'] = i
+    nosql_data = nosql_only_df + shared_df
     databaseMongo.insert_many_data(nosql_data)
     print("NoSQL data inserted successfully.")
