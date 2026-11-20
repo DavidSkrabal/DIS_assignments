@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import type { SaleData } from './api/structures'
 import DataTable from './components/table'
 import DataForm, { type FormField } from './components/form'
-import { getAllSQL, getAllNoSQL, deleteSale, updateSale, createSale } from './api/SaleApi'
+import { getAllSQL, getAllNoSQL, deleteSale, updateSale, createSale, resetDatabase, createSQLSale, createNoSQLSale } from './api/SaleApi'
 
 function App() {
   const [saleSQL, setSaleSQL] = useState<SaleData[]>([]);
@@ -46,6 +46,23 @@ const handleDelete = async (rowToDelete: SaleData) => {
     setSelectedSaleRow(rowToEdit);
   };
 
+  const handleResetDatabases = async () => {
+    try {
+        await resetDatabase();
+    } catch (error) {
+        console.error("Error resetting databases:", error);
+    }
+    Promise.all([
+            getAllSQL(),
+            getAllNoSQL()
+        ])
+        .then(([sqlData, noSqlData]) => {
+            setSaleSQL(sqlData);
+            setSaleNoSQL(noSqlData);
+        })
+        .catch(error => console.error("Error through data loading:", error));  
+    }
+
   const handleFormSubmit = async (formData: any) => {
         try {
             if (formData.id) {
@@ -65,12 +82,26 @@ const handleDelete = async (rowToDelete: SaleData) => {
         }
   };
 
+  const handleSubmitSQL = async (formData: any, db: 'SQL' | 'NoSQL') => {
+    try {
+        if (db === 'SQL') {
+            const response = await createSQLSale(formData);
+            setSaleSQL(prev => [...prev, response]);
+        } else {
+            const response = await createNoSQLSale(formData);
+            setSaleNoSQL(prev => [...prev, response]);
+        }
+    } catch (error) {
+        console.error("Adding sale error:", error);
+    }
+  };
+
 
   return (
     <div>
         <div className="container p-4 p-md-5">
             <h1 className="fs-3 fw-bold mb-4">List of SQL data</h1>
-            
+            <button className="btn btn-primary mb-3" onClick={handleResetDatabases}>Reset databases</button>
             <DataTable 
                 headers={tableSaleHeaders} 
                 dataKeys={tableSaleKeys} 
@@ -92,6 +123,8 @@ const handleDelete = async (rowToDelete: SaleData) => {
                     <DataForm 
                         fields={saleFields}
                         onSubmit={(data) => handleFormSubmit(data)}
+                        onSubmitSQL={(data) => handleSubmitSQL(data, 'SQL')}
+                        onSubmitNoSQL={(data) => handleSubmitSQL(data, 'NoSQL')}
                     />
                 </div>
                 <div className="col-md-6">

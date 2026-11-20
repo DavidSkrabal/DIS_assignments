@@ -10,12 +10,16 @@ interface DataFormProps<T> {
     initialData?: T | null;
     fields: FormField<T>[];
     onSubmit: (data: Partial<T>) => void;
+    onSubmitSQL?: (data: Partial<T>) => void;
+    onSubmitNoSQL?: (data: Partial<T>) => void;
 }
 
 export default function DataForm<T extends Record<string, any>>({
     initialData,
     fields,
     onSubmit,
+    onSubmitSQL,
+    onSubmitNoSQL
 }: DataFormProps<T>) {
     const [formData, setFormData] = useState<Partial<T>>(initialData || {});
 
@@ -29,14 +33,14 @@ export default function DataForm<T extends Record<string, any>>({
         setFormData((prev) => ({ ...prev, [key]: value }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent, onSubmitFunc: (data: Partial<T>) => void) => {
         e.preventDefault();
-        onSubmit(formData);
+        onSubmitFunc(formData);
         setFormData({});
     };
 
     return (
-        <form onSubmit={handleSubmit} className="card p-4 shadow-sm mt-4">
+        <form className="card p-4 shadow-sm mt-4">
             <h2 className="h4 fw-bold mb-4">
                 {isEdit ? 'Edit row' : 'Add new row'}
             </h2>
@@ -61,9 +65,29 @@ export default function DataForm<T extends Record<string, any>>({
                     type="submit" 
                     className="btn btn-success"
                     disabled={!formData || Object.keys(formData).length === 0}
+                    onClick={(e) => handleSubmit(e, onSubmit)}
                 >
                     {isEdit ? 'Save changes' : 'Create'}
                 </button>
+                {onSubmitSQL && onSubmitNoSQL ? 
+                    <div className="d-flex gap-2">
+                        <button 
+                            type="button" 
+                            className="btn btn-primary"
+                            onClick={(e) => handleSubmit(e, onSubmitSQL)}
+                        >
+                            Create SQL
+                        </button> 
+                            <button 
+                            type="button" 
+                            className="btn btn-primary"
+                            onClick={(e) => handleSubmit(e, onSubmitNoSQL)}
+                        >
+                            Create NoSQL
+                        </button> 
+                        </div>
+                    
+                    : null}
                 <button 
                     type="button" 
                     onClick={() => setFormData({})}

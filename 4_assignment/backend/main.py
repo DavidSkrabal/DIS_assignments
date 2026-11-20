@@ -35,6 +35,11 @@ def startup_event():
 def test_endpoint():
     return {"message": "Hi, FastAPI backend is running successfully.", "status": "ok"}
 
+@app.post("/api/reset")
+def reset_endpoint():
+    dataSeed.seed_data()
+    return {"message": "Database reset successfully.", "status": "ok"}
+
 @app.get("/api/sql")
 def read_data():
     data = databaseSQL.get_all_data()
@@ -54,7 +59,18 @@ def read_data():
 def insert_data(data: dict):
     result = replication.insert_data(data)
     return result
-    
+
+@app.post("/api/insert/sql")
+def insert_data_sql(data: dict):
+    result = databaseSQL.insert_data(data)
+    return result
+
+@app.post("/api/insert/nosql")
+def insert_data_nosql(data: dict):
+    data["id"] = databaseMongo.get_next_id()
+    result = databaseMongo.insert_data(data)
+    return result
+
 @app.put("/api/update/{emp_id}")
 def update_data(emp_id: int, data: dict):
     result = replication.update_data(emp_id, data)

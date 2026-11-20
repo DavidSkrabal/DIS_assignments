@@ -106,3 +106,13 @@ def delete_data(record_id):
     else:
         print("No matching record found to delete.")
         return False
+
+def get_next_id():
+    client, mongo_db = db_connect()
+    collection = mongo_db["sales_dictionary"]
+    last_record = collection.find_one(sort=[("id", -1)])
+    client.close()
+
+    if last_record and "id" in last_record:
+        return max(int(last_record["id"]) + 1, 1000)
+    return 1000

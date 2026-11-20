@@ -20,6 +20,19 @@ export async function getAllSQL(): Promise<SaleData[]> {
 }
 
 /**
+ * Resets the database by sending a POST request to the backend API.
+ */
+export async function resetDatabase(): Promise<void> {
+    const response = await fetch("http://localhost:8000/api/reset", {
+        method: "POST",
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+}
+
+/**
  * Gets a list of all no sql sales from the backend API.
  * @returns List of lines
  */
@@ -44,6 +57,44 @@ export async function getAllNoSQL(): Promise<SaleData[]> {
  */
 export async function createSale(newSale: SaleData): Promise<SaleData> {
     const response = await fetch("http://127.0.0.1:8000/api/insert", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newSale)
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return await response.json();
+}
+
+/**
+ * Creates a new sale for SQL database with the provided details.
+ * @param newSale
+ */
+export async function createSQLSale(newSale: SaleData): Promise<SaleData> {
+    const response = await fetch("http://127.0.0.1:8000/api/insert/sql", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newSale)
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return await response.json();
+}
+
+/**
+ * Creates a new sale for NoSQL database with the provided details.
+ * @param newSale
+ */
+export async function createNoSQLSale(newSale: SaleData): Promise<SaleData> {
+    const response = await fetch("http://127.0.0.1:8000/api/insert/nosql", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
